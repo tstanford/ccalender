@@ -46,10 +46,8 @@ while (calDate.getFullYear() == year){
     const parentA = "Vicki";
     const parentB = "Tim";
 
-    if (dayOfWeek == 0) {
-        eventName = (weekNumber%2==0?parentA:parentB);
-    }
-    else if (dayOfWeek == 1) {
+
+    if (dayOfWeek == 1) {
         eventName = (weekNumber%2==0?parentA:parentB);
     }
     else if (dayOfWeek == 2) {
@@ -65,6 +63,9 @@ while (calDate.getFullYear() == year){
         eventName = (weekNumber%2==0?parentA:parentB);
     }
     else if (dayOfWeek == 6) {
+        eventName = (weekNumber%2==0?parentA:parentB);
+    }
+    else if (dayOfWeek == 0) {
         eventName = (weekNumber%2==0?parentA:parentB);
     }
 

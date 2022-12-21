@@ -1,54 +1,51 @@
-currentDate = new Date();
+const fs = require('fs');
 
-Date.prototype.getWeek = function () {
-    // Create a copy of this date object
-    var target = new Date(this.valueOf());
-  
-    // ISO week date weeks start on Monday, so correct the day number
-    var dayNr = (this.getDay() + 6) % 7;
-  
-    // ISO 8601 states that week 1 is the week with the first Thursday of that year
-    // Set the target date to the Thursday in the target week
-    target.setDate(target.getDate() - dayNr + 3);
-  
-    // Store the millisecond value of the target date
-    var firstThursday = target.valueOf();
-  
-    // Set the target to the first Thursday of the year
-    // First, set the target to January 1st
-    target.setMonth(0, 1);
-  
-    // Not a Thursday? Correct the date to the next Thursday
-    if (target.getDay() !== 4) {
-      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-  
-    // The week number is the number of weeks between the first Thursday of the year
-    // and the Thursday in the target week (604800000 = 7 * 24 * 3600 * 1000)
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
+Date.prototype.addDay = function(numberOfDays) {
+    return this.setDate(date.getDate()+numberOfDays);
 }
 
-calDate = new Date();
-year = calDate.getFullYear();
-prevMonth = -1;
-firstRun = true;
-console.log("<link rel=\"stylesheet\" href=\"cal.css\"/>");
-console.log("<h1>"+year+"</h1><div class=\"year\">");
-while (calDate.getFullYear() == year){
+var pattern0="AABBAAA";
+var pattern1="BBAABBB";
 
-    if(prevMonth != calDate.getMonth()) {
-        if(!firstRun){
-            console.log("  </div>\n\n");
-        }
-        console.log("  <div class=\"month\"><label>"+calDate.toLocaleString('default', { month: 'long' })+"</label>");
-    }
-    let weekNumber = calDate.getWeek();
-    let parent = (weekNumber%2==0?"parent_a":"parent_b");
-    let dayOfWeek = calDate.toLocaleDateString('default', { weekday: 'long' });
-    console.log("    <div class=\"day "+parent+" "+dayOfWeek.toLowerCase()+"\">"+dayOfWeek+" "+calDate.getDate()+"</div>");
+function getParent(date, weekCounter) {
+    let weekPattern = weekCounter %2;
+    let day = date.getDay();
 
-    firstRun = false;
-    prevMonth = calDate.getMonth();
-    calDate.setDate(calDate.getDate()+1);
+    //left shift days of week. making sunday == 6 rather than 0
+    if (day == 0) day=7;
+    day--;
+
+    return (weekPattern==0) ? pattern0[day] : pattern1[day];
 }
-console.log("  </div>\n</div>");
+
+var date = new Date("2023-01-01");
+var weekCounter = 0;
+
+var fileContents = "";
+
+fileContents+= "BEGIN:VCALENDAR\n";
+fileContents+= "PRODID:-//Microsoft Corporation//Outlook 16.0 MIMEDIR//EN\n";
+fileContents+= "VERSION:2.0\n";
+
+for(var i=0; i<365; i++) {
+
+    let dateString = (date.toISOString().split('T')[0]).toString();
+    let eventName = getParent(date, weekCounter)=="A" ? "Tim" : "Vicki";
+
+    fileContents+= "BEGIN:VEVENT\n";
+    fileContents+= "SUMMARY: "+eventName+"\n";
+    fileContents+= "DTSTART;VALUE=DATE:"+dateString.replace(/-/g, '')+"\n";
+    fileContents+= "UID: "+(dateString+"_CCalender_").padEnd(36,"0")+"\n";
+    fileContents+= "END:VEVENT"+"\n"; 
+
+    date.addDay(1);
+    if(date.getDay() == 1){
+        weekCounter++;
+    }
+}
+
+fileContents+= "END:VCALENDAR\n" ;
+
+fs.writeFileSync('calender.ics', fileContents);
+
+

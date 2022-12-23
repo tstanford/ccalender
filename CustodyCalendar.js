@@ -24,9 +24,9 @@ class CustodyCalendar {
 
     generate(startDate, numberOfDays) {    
         
-        var date = new Date(startDate.getTime());
-        var weekCounter = 0;
-        var fileContents = "";
+        let date = new Date(startDate.getTime());
+        let weekCounter = 0;
+        let fileContents = "";
     
         fileContents+= "BEGIN:VCALENDAR\n";
         fileContents+= "PRODID:-//Microsoft Corporation//Outlook 16.0 MIMEDIR//EN\n";

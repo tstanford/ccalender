@@ -10,6 +10,13 @@ class CustodyCalendar {
         this.pattern0="AABBAAA";
         this.pattern1="BBAABBB";
     }
+
+    dateToYMD(date) {
+        var d = date.getDate();
+        var m = date.getMonth() + 1; //Month from 0 to 11
+        var y = date.getFullYear();
+        return '' + y + (m<=9 ? '0' + m : m) + (d <= 9 ? '0' + d : d);
+      }
     
     getParent(date, weekCounter) {
         let weekPattern = weekCounter %2;
@@ -34,12 +41,16 @@ class CustodyCalendar {
     
         for(var i=0; i<numberOfDays; i++) {
     
-            let dateString = (date.toISOString().split('T')[0]).toString();
+            let dateString = dateToYMD(date);
             let eventName = this.getParent(date, weekCounter)=="A" ? "Tim" : "Vicki";
+
+            if(eventName == "Tim" && date.getDay() == 4){
+                console.log(date.toString());
+            }
     
             fileContents+= "BEGIN:VEVENT\n";
             fileContents+= "SUMMARY: "+eventName+"\n";
-            fileContents+= "DTSTART;VALUE=DATE:"+dateString.replace(/-/g, '')+"\n";
+            fileContents+= "DTSTART:"+dateString+"\n";
             fileContents+= "UID: "+(dateString+"_CCalender_").padEnd(36,"0")+"\n";
             fileContents+= "END:VEVENT"+"\n"; 
     
